@@ -1,5 +1,6 @@
 package com.restaurant.restaurant_app.models;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Data
-public class RegisterRestaurantRequest {
+@Builder
+public class RestaurantsResponse {
     private String restaurantName;
     private String mobileNo;
     private String email;
@@ -23,5 +25,5 @@ public class RegisterRestaurantRequest {
     private String serviceType;
     private String openingHour;
     private String clossingHour;
-    private String logo;
+    private String logo; 
 }
