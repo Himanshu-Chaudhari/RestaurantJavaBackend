@@ -20,7 +20,7 @@ public class Restaurant {
     @Column(name = "restaurantName", length = 100, nullable = false)
     private String restaurantName;
 
-    @Column(name = "mobileNo", length = 100, nullable = false)
+    @Column(name = "mobileNo", length = 100, nullable = false , unique = true)
     private String mobileNo;
 
     public enum RestroType {

@@ -10,8 +10,12 @@ import com.restaurant.restaurant_app.entity.Restaurant;
 import com.restaurant.restaurant_app.entity.RestaurantAddress;
 import com.restaurant.restaurant_app.entity.RestaurantContact;
 import com.restaurant.restaurant_app.entity.RestaurantLegalDocuments;
+import com.restaurant.restaurant_app.entity.RestaurantOwner;
+import com.restaurant.restaurant_app.entity.RestaurantOwnerRelationship;
 import com.restaurant.restaurant_app.models.RegisterRestaurantRequest;
 import com.restaurant.restaurant_app.models.RestaurantsResponse;
+import com.restaurant.restaurant_app.repository.RestaurantOwnerRelationshipRepository;
+import com.restaurant.restaurant_app.repository.RestaurantOwnerRepository;
 import com.restaurant.restaurant_app.repository.RestaurantRepository;
 import com.restaurant.restaurant_app.service.RestaurantServices;
 
@@ -19,13 +23,16 @@ import com.restaurant.restaurant_app.service.RestaurantServices;
 public class RestaurantServicesImplementations implements RestaurantServices {
     
     private final RestaurantRepository restaurantRepository;
+    private final RestaurantOwnerRepository restaurantOwnerRepository;
+    private final RestaurantOwnerRelationshipRepository restaurantOwnerRelationshipRepository;
 
-    public RestaurantServicesImplementations(RestaurantRepository restaurantRepository) {
+    public RestaurantServicesImplementations(RestaurantRepository restaurantRepository , RestaurantOwnerRelationshipRepository restaurantOwnerRelationshipRepository,RestaurantOwnerRepository restaurantOwnerRepository) {
         this.restaurantRepository = restaurantRepository;
+        this.restaurantOwnerRelationshipRepository = restaurantOwnerRelationshipRepository;
+        this.restaurantOwnerRepository = restaurantOwnerRepository;
     }
 
     private Restaurant mapDTOToEntity(RegisterRestaurantRequest registerRestaurantRequest){
-
         Restaurant restaurant = Restaurant.builder()
         .restaurantId(null)
         .restaurantName(registerRestaurantRequest.getRestaurantName())
@@ -62,7 +69,6 @@ public class RestaurantServicesImplementations implements RestaurantServices {
             restaurantAddress.setContacts(List.of(restaurantContact));
             restaurantAddress.setLegalDocuments(List.of(restaurantLegalDocuments));
             restaurant.setBaseAddress(List.of(restaurantAddress));
-
             return restaurant;
     }
 
@@ -81,13 +87,11 @@ public class RestaurantServicesImplementations implements RestaurantServices {
         List<RestaurantsResponse> restaurantResponseList = new ArrayList<>();
     
         for (Restaurant restaurant : restaurants) {
-            // Get the first address if available
             RestaurantAddress address = null;
             if (restaurant.getBaseAddress() != null && !restaurant.getBaseAddress().isEmpty()) {
                 address = restaurant.getBaseAddress().get(0);
             }
-    
-            // Extract address details
+
             String addressLine1 = address != null ? address.getAddressLine1() : "N/A";
             String addressLine2 = address != null ? address.getAddressLine2() : "N/A";
             String city = address != null ? address.getCity() : "N/A";
@@ -95,25 +99,22 @@ public class RestaurantServicesImplementations implements RestaurantServices {
             String country = address != null ? address.getCountry() : "N/A";
             String pincode = address != null ? address.getPincode() : "N/A";
     
-            // Extract contact details from the first address
             List<RestaurantContact> contacts = address != null ? address.getContacts() : null;
             String mobileNo = "N/A";
             String email = "N/A";
             if (contacts != null && !contacts.isEmpty()) {
-                RestaurantContact contact = contacts.get(0); // Get the first contact
+                RestaurantContact contact = contacts.get(0); 
                 mobileNo = contact.getMobileNo() ;
                 email = contact.getEmail();
             }
     
-            // Extract legal document details from the first address
             List<RestaurantLegalDocuments> legalDocuments = address != null ? address.getLegalDocuments() : null;
             String legalDocumentDetails = "N/A";
             if (legalDocuments != null && !legalDocuments.isEmpty()) {
-                RestaurantLegalDocuments doc = legalDocuments.get(0); // Get the first legal document
+                RestaurantLegalDocuments doc = legalDocuments.get(0);
                 legalDocumentDetails = doc.getFoodLicence() != null ? doc.getFoodLicence() : "N/A";
             }
-    
-            // Build the response
+            
             restaurantResponseList.add(RestaurantsResponse.builder()
                 .restaurantName(restaurant.getRestaurantName())
                 .mobileNo(mobileNo)
@@ -143,6 +144,31 @@ public class RestaurantServicesImplementations implements RestaurantServices {
     public List<RestaurantsResponse> getAllRestaurants() {
         List<Restaurant> restaurantDetails = restaurantRepository.findAll();
         return mapEnityToDTO(restaurantDetails);
+    }
+
+    @Override
+    public boolean addOwnerToRestaurant(String restaurantId, String ownerId){
+        try{
+            Integer rId = Integer.parseInt(restaurantId);
+            Integer oId = Integer.parseInt(ownerId);
+            Restaurant restaurant = restaurantRepository.findById(rId).orElse(null);
+            RestaurantOwner restaurantOwner = restaurantOwnerRepository.findById(oId).orElse(null);
+            if(restaurant.equals(null) || restaurantOwner.equals(null)){
+                return false;
+            }
+            RestaurantOwnerRelationship restaurantOwnerRelationship =  RestaurantOwnerRelationship.builder().restaurantId(restaurant)
+            .restaurantOwnerId(restaurantOwner).build();
+            if(restaurantOwnerRelationship.equals(null)){
+                return false;
+            }
+            RestaurantOwnerRelationship response = restaurantOwnerRelationshipRepository.save(restaurantOwnerRelationship);
+            if(response.equals(null)){
+                return false;
+            }
+            return true;
+        }catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid owner ID: " + ownerId, e);
+        }
     }
     
 }

@@ -3,6 +3,7 @@ package com.restaurant.restaurant_app.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.restaurant.restaurant_app.models.AddOwnerToRestaurant;
 import com.restaurant.restaurant_app.models.RegisterRestaurantRequest;
 import com.restaurant.restaurant_app.models.RestaurantsResponse;
 import com.restaurant.restaurant_app.service.implementations.RestaurantServicesImplementations;
@@ -35,6 +36,7 @@ public class Restaurant {
             return new ResponseEntity<>("Failed to fetch restaurants: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    
     @PostMapping("/register")
     public ResponseEntity<String> registerRestaurant(@RequestBody RegisterRestaurantRequest registerRestaurantRequest) {
         try{
@@ -44,5 +46,12 @@ public class Restaurant {
             return new ResponseEntity<>( err.toString() , HttpStatus.EXPECTATION_FAILED);
         }
     }
+
+    @PostMapping("/addOwner")
+    public boolean addOwnerToRestaurant(@RequestBody AddOwnerToRestaurant request) {
+        boolean response = this.restaurantService.addOwnerToRestaurant(request.getRestaurantId(), request.getOwnerId());
+        return response;
+    }
+    
     
 }

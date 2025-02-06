@@ -30,10 +30,10 @@ public class RestaurantContact {
     @JoinColumn(name = "addressId",nullable = false)
     private RestaurantAddress addressId;
 
-    @Column(name = "mobileNo",length = 20,nullable = false)
+    @Column(name = "mobileNo",length = 20,nullable = false,unique = true)
     private String mobileNo;
 
-    @Column(name = "email",length = 50,nullable = false)
+    @Column(name = "email",length = 50,nullable = false,unique = true)
     private String email;
      
 }

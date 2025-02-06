@@ -1,11 +1,7 @@
 package com.restaurant.restaurant_app.models;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Data
 public class RegisterRestaurantRequest {
     private String restaurantName;
