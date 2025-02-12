@@ -1,8 +1,6 @@
 package com.restaurant.restaurant_app.service.implementations;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.restaurant.restaurant_app.entity.RestaurantOwner;
@@ -12,10 +10,11 @@ import com.restaurant.restaurant_app.models.RegisterOwnerRequest;
 import com.restaurant.restaurant_app.repository.RestaurantOwnerRepository;
 import com.restaurant.restaurant_app.service.RestaurantOwnerServices;
 
-@Service
-public class RestaurantOwnerServicesImplementation implements RestaurantOwnerServices {
+import lombok.extern.slf4j.Slf4j;
 
-    Logger logger = LoggerFactory.getLogger(RestaurantOwnerServicesImplementation.class);
+@Service
+@Slf4j
+public class RestaurantOwnerServicesImplementation implements RestaurantOwnerServices {
     private final RestaurantOwnerRepository restaurantOwnerRepository;
 
     RestaurantOwnerServicesImplementation(RestaurantOwnerRepository restaurantOwnerRepository){
@@ -61,7 +60,7 @@ public class RestaurantOwnerServicesImplementation implements RestaurantOwnerSer
                 .ownerId(owner.getOwnerId()).build()
             );
         }
-        logger.info(ownerResponses.toString());
+        log.info(ownerResponses.toString());
         return ownerResponses;
     }
 

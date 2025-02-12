@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
 import com.restaurant.restaurant_app.entity.Restaurant;
 import com.restaurant.restaurant_app.entity.RestaurantAddress;
 import com.restaurant.restaurant_app.entity.RestaurantContact;
 import com.restaurant.restaurant_app.entity.RestaurantLegalDocuments;
 import com.restaurant.restaurant_app.entity.RestaurantOwner;
 import com.restaurant.restaurant_app.entity.RestaurantOwnerRelationship;
+import com.restaurant.restaurant_app.models.GetOwnerRestaurantRelation;
 import com.restaurant.restaurant_app.models.RegisterRestaurantRequest;
 import com.restaurant.restaurant_app.models.RestaurantsResponse;
 import com.restaurant.restaurant_app.repository.RestaurantOwnerRelationshipRepository;
@@ -116,6 +116,7 @@ public class RestaurantServicesImplementations implements RestaurantServices {
             }
             
             restaurantResponseList.add(RestaurantsResponse.builder()
+                .restaurantId(restaurant.getRestaurantId())
                 .restaurantName(restaurant.getRestaurantName())
                 .mobileNo(mobileNo)
                 .email(email)
@@ -170,5 +171,21 @@ public class RestaurantServicesImplementations implements RestaurantServices {
             throw new IllegalArgumentException("Invalid owner ID: " + ownerId, e);
         }
     }
+
+    @Override
+    public List<GetOwnerRestaurantRelation> getOwners(Integer restaurantId) {
+    List<RestaurantOwnerRelationship> relationships = 
+        restaurantOwnerRelationshipRepository.findByRestaurantId_RestaurantId(restaurantId);
+
+    List<GetOwnerRestaurantRelation> response = new ArrayList<>();
+        for(RestaurantOwnerRelationship relationship : relationships){
+            response.add(GetOwnerRestaurantRelation.builder()
+                .restaurantId(restaurantId)
+                .restaurantOwnerId(relationship.getRestaurantOwnerId().getOwnerId()).build()    
+            );
+        }
+    return response;
+}
+
     
 }

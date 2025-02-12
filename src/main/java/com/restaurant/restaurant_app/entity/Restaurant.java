@@ -43,12 +43,9 @@ public class Restaurant {
     @Column(name = "closingHours", length = 10, nullable = true)
     private String closingHours;
 
-    @Column(name = "logo", length = 100, nullable = true)
+    @Column(name = "logo", length = 500, nullable = true)
     private String logo;
 
     @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL)
     private List<RestaurantAddress> baseAddress;
-
-    
-
 }
